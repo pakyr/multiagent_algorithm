@@ -37,6 +37,7 @@ agent_2_parameters = {
     'ci_conf': 0.4
 }
 
+
 def write_on_report(text, file=REPORT):
     with open(file, 'a') as f:
         f.write(text)
@@ -245,8 +246,8 @@ if __name__ == '__main__':
         write_on_report(f'\n{par} = {online_parameters[par]}')
 
     # Choose how to divide the network
-    network_1 = networks.get_network_from_nodes(['Pr', 'L', 'Pow', 'S', 'H', 'C'], False)
-    network_2 = networks.get_network_from_nodes(['W', 'O', 'T', 'B', 'A', 'CO', 'CO2'], False)
+    network_1 = networks.get_network_from_nodes(['W', 'O', 'T', 'B', 'A', 'CO', 'CO2'], False)
+    network_2 = networks.get_network_from_nodes(['Pr', 'L', 'Pow', 'S', 'H', 'C'], False)
 
     # Initialize agents
     agent_1 = Agent(nodes=network_1['nodes'], non_doable=network_1['non_doable'], edges=network_1['edges'],
@@ -254,17 +255,18 @@ if __name__ == '__main__':
     agent_2 = Agent(nodes=network_2['nodes'], non_doable=network_2['non_doable'], edges=network_2['edges'],
                     obs_data=network_2['dataset'])
 
+    # Define ground-truth agent networks
+    # Ground-truth agent 1
+    gt_1 = [("CO", "A"), ("CO2", "A"), ("A", "W"), ("B", "W"), ("O", "T"), ("W", "T")]
+    # Ground-truth agent 2
+    gt_2 = [("Pr", "L"), ("Pr", "S"), ("L", "Pow"), ("S", "H"), ("S", "C"), ("H", "Pow"), ("C", "Pow")]
+    # Ground-truth agent 2 post request
+    gt_3 = [("Pr", "L"), ("Pr", "S"), ("L", "Pow"), ("S", "H"), ("S", "C"), ("H", "Pow"), ("C", "Pow"), ("H", "T"), ("C", "T")]
+
     # List the nodes to send in the message from agent 2 to agent 1
     # So far, this array is managed manually, but the idea is to build an automatic method to recognize the nodes to
     # investigate from outliers values
-    nodes_to_investigate = ['T']
-
-    # Ground-truth agent 1
-    gt_1 = [("Pr", "L"), ("Pr", "S"), ("L", "Pow"), ("S", "H"), ("H", "Pow"), ("S", "C"), ("C", "Pow")]
-    # Ground-truth agent 2
-    gt_2 = [("CO", "A"), ("CO2", "A"), ("A", "W"), ("B", "W"), ("O", "T"), ("W", "T")]
-    # Ground-truth agent 2 post request
-    gt_3 = [("H", "T"), ("C", "T"), ("CO", "A"), ("CO2", "A"), ("A", "W"), ("B", "W"), ("O", "T"), ("W", "T")]
+    nodes_to_investigate = ['H', 'C']
 
     # Run the entire algorithm
     model_1, model_2, new_edges, elapsed_time = run(agent_1, agent_2, gt_1, gt_2, gt_3, nodes_to_investigate, timestamp)
